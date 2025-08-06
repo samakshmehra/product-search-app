@@ -1,0 +1,10 @@
+streamlit
+pandas
+pydantic
+sqlmodel
+pgvector
+google-generativeai
+langchain-google-genai
+langchain
+psycopg2-binary
+psycopg2-binary

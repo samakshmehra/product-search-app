@@ -3,7 +3,6 @@ from sqlmodel import SQLModel, Field, Session, create_engine, select, text, Colu
 from pgvector.sqlalchemy import Vector
 from typing import List
 from google.genai import types
-from dotenv import load_dotenv
 import os
 from google import genai
 from google.genai import types
@@ -13,11 +12,18 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import ChatPromptTemplate
 import logging
 
-load_dotenv()
-
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Function to get environment variables (works both locally and on Streamlit Cloud)
+def get_env_var(key):
+    """Get environment variable from st.secrets (Streamlit Cloud) or os.environ (local)"""
+    try:
+        import streamlit as st
+        return st.secrets[key]
+    except:
+        return os.getenv(key)
 
 # New output schema models
 class CategorizedProduct(BaseModel):
@@ -91,7 +97,7 @@ def product_type_detection(context_parts):
     Return ONLY the product type ,nothing else.
     """)
     
-    api_key = os.getenv('GEMINI_API_KEY')
+    api_key = get_env_var('GEMINI_API_KEY')
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.0-flash", 
         temperature=0.4,
@@ -130,7 +136,7 @@ def get_manufacturer_embedding(manufacture_name: str, client) -> list[float]:
     return get_embedding(manufacture_name, client)
 
 
-POSTGRESQL_URL = os.getenv('POSTGRESQL_URL')
+POSTGRESQL_URL = get_env_var('POSTGRESQL_URL')
 engine = create_engine(POSTGRESQL_URL)
 
 # Database model
@@ -183,7 +189,7 @@ def search_products_with_embeddings(
         raise ValueError("Threshold must be between 0.0 and 1.0")
     
     # Initialize Gemini client
-    api_key = os.getenv('GEMINI_API_KEY')
+    api_key = get_env_var('GEMINI_API_KEY')
     if not api_key:
         raise ValueError("GEMINI_API_KEY not found in environment variables")
     client = genai.Client(api_key=api_key)
@@ -399,7 +405,7 @@ def refine_search_results_with_llm(
     Return the categorized results in the structured format with three categories.
     """)
  
-    api_key = os.getenv('GEMINI_API_KEY')
+    api_key = get_env_var('GEMINI_API_KEY')
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.0-flash", 
         temperature=0.0,

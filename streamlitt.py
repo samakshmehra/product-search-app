@@ -6,12 +6,18 @@ Streamlit App for Product Search and Refinement
 import streamlit as st
 import json
 import pandas as pd
-from dotenv import load_dotenv
 import os
 from matchingcorrectedcode import refine_search_results_with_llm, search_products_with_embeddings, group_products_by_manufacturer, join_product_context, product_type_detection, CategorizedResults
 
-# Load environment variables
-load_dotenv()
+# Function to get environment variables (works both locally and on Streamlit Cloud)
+def get_env_var(key):
+    """Get environment variable from st.secrets (Streamlit Cloud) or os.environ (local)"""
+    try:
+        # Try st.secrets first (Streamlit Cloud)
+        return st.secrets[key]
+    except:
+        # Fallback to os.environ (local development)
+        return os.getenv(key)
 
 # Page config
 st.set_page_config(
@@ -403,11 +409,11 @@ def display_grouped_results(results, product_name):
 
 if __name__ == "__main__":
     # Check environment variables
-    if not os.getenv('GEMINI_API_KEY'):
+    if not get_env_var('GEMINI_API_KEY'):
         st.error("❌ GEMINI_API_KEY not found in environment variables")
         st.stop()
     
-    if not os.getenv('POSTGRESQL_URL'):
+    if not get_env_var('POSTGRESQL_URL'):
         st.error("❌ POSTGRESQL_URL not found in environment variables")
         st.stop()
     
