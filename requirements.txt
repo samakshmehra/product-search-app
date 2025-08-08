@@ -2,9 +2,8 @@ streamlit
 pandas
 pydantic
 sqlmodel
+psycopg2-binary
 pgvector
-google-generativeai
+python-dotenv
 langchain-google-genai
-langchain
-psycopg2-binary
-psycopg2-binary
+google-genai
