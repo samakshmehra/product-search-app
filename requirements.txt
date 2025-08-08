@@ -7,3 +7,6 @@ pgvector
 python-dotenv
 langchain-google-genai
 google-genai
+langchain
+langchain-core
+langchain-community
